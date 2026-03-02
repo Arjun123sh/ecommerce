@@ -7,6 +7,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/api/axios";
+import { cartApi } from "@/api/cart";
+import { useCart } from "@/lib/cart";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function CheckoutForm() {
@@ -15,6 +17,7 @@ export default function CheckoutForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { id: orderId } = useParams();
+  const { clearCart } = useCart();
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -51,6 +54,15 @@ export default function CheckoutForm() {
         await api.post(`/orders/${orderId}/pay`, {
           paymentIntentId: result.paymentIntent.id,
         });
+
+        // ✅ Clear cart in local state, localStorage, and backend
+        clearCart();
+        localStorage.removeItem("selectedItems");
+        try {
+          await cartApi.clearCart();
+        } catch (err) {
+          console.error("Failed to clear cart on backend:", err);
+        }
 
         toast({
           title: "Payment successful",
