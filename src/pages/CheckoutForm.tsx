@@ -17,7 +17,7 @@ export default function CheckoutForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { id: orderId } = useParams();
-  const { clearCart } = useCart();
+  const { clearCart, removeItem } = useCart();
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -55,13 +55,25 @@ export default function CheckoutForm() {
           paymentIntentId: result.paymentIntent.id,
         });
 
-        // ✅ Clear cart in local state, localStorage, and backend
-        clearCart();
-        localStorage.removeItem("selectedItems");
-        try {
-          await cartApi.clearCart();
-        } catch (err) {
-          console.error("Failed to clear cart on backend:", err);
+        // ✅ Clear only the purchased items from cart
+        const savedRaw = localStorage.getItem("selectedItems");
+        if (savedRaw) {
+          try {
+            const purchasedItemIds: string[] = JSON.parse(savedRaw);
+            purchasedItemIds.forEach(id => removeItem(id));
+            await Promise.all(purchasedItemIds.map(id => cartApi.removeFromCart(id)));
+            localStorage.removeItem("selectedItems");
+          } catch (err) {
+            console.error("Failed to clear purchased items from cart:", err);
+          }
+        } else {
+          clearCart();
+          localStorage.removeItem("selectedItems");
+          try {
+            await cartApi.clearCart();
+          } catch (err) {
+            console.error("Failed to clear cart on backend:", err);
+          }
         }
 
         toast({

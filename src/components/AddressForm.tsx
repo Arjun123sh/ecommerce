@@ -43,8 +43,19 @@ export function AddressForm({
     setEditingId(null);
   };
 
+  const validatePhone = (phone: string) => {
+    // Only allow exactly 10 digits, possibly with spaces, dashes, or parens
+    const cleaned = phone.replace(/\D/g, "");
+    return cleaned.length === 10;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validatePhone(formData.phone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await onAddAddress(formData);
@@ -69,6 +80,11 @@ export function AddressForm({
 
   const handleUpdate = async () => {
     if (!editingId || !onUpdateAddress) return;
+    if (!validatePhone(formData.phone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await onUpdateAddress(editingId, formData);
@@ -121,10 +137,16 @@ export function AddressForm({
       )}
 
       {!isAdding ? (
-        <Button variant="outline" onClick={() => setIsAdding(true)} className="w-full gap-2">
-          <MapPin className="h-4 w-4" />
-          Add New Address
-        </Button>
+        addresses.length < 3 ? (
+          <Button variant="outline" onClick={() => setIsAdding(true)} className="w-full gap-2">
+            <MapPin className="h-4 w-4" />
+            Add New Address
+          </Button>
+        ) : (
+          <p className="text-sm text-muted-foreground text-center">
+            You have reached the maximum of 3 saved addresses.
+          </p>
+        )
       ) : (
         <Card>
           <CardHeader>
