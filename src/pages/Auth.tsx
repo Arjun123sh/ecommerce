@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,6 +13,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -30,6 +32,11 @@ export default function Auth() {
     } else {
       if (!fullName.trim()) {
         toast({ title: "Name required", description: "Please enter your full name.", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+      if (password.length < 8) {
+        toast({ title: "Password too short", description: "Password must be at least 8 characters long.", variant: "destructive" });
         setLoading(false);
         return;
       }
@@ -66,7 +73,28 @@ export default function Auth() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
+            <div className="relative">
+              <Input 
+                id="password" 
+                type={showPassword ? "text" : "password"} 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                placeholder="••••••••" 
+                required 
+                minLength={8}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-black dark:hover:text-white"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            {!isLogin && (
+              <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
+            )}
           </div>
           <Button type="submit" className="w-full font-display font-semibold" disabled={loading}>
             {loading ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
