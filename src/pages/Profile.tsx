@@ -101,10 +101,12 @@ export default function Profile() {
                 <label className="text-sm text-muted-foreground">Email</label>
                 <p className="font-medium">{user?.email}</p>
               </div>
-              <div>
-                <label className="text-sm text-muted-foreground">Role</label>
-                <p className="font-medium capitalize">{user?.role}</p>
-              </div>
+              {user?.role && user.role !== 'user' && (
+                <div>
+                  <label className="text-sm text-muted-foreground">Role</label>
+                  <p className="font-medium capitalize">{user?.role}</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

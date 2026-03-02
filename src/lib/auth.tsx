@@ -8,6 +8,7 @@ export interface Address {
   city: string;
   postalCode: string;
   country: string;
+  phone: string;
   isDefault: boolean;
 }
 

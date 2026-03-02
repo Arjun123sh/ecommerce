@@ -362,6 +362,7 @@ export default function Cart() {
           city: selectedAddress.city,
           postalCode: selectedAddress.postalCode,
           country: selectedAddress.country,
+          phone: selectedAddress.phone,
         },
         paymentMethod: "Stripe",
       });

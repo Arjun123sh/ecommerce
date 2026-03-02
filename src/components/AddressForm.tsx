@@ -32,12 +32,13 @@ export function AddressForm({
     city: "",
     postalCode: "",
     country: "US",
+    phone: "",
     isDefault: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resetForm = () => {
-    setFormData({ address: "", city: "", postalCode: "", country: "US", isDefault: false });
+    setFormData({ address: "", city: "", postalCode: "", country: "US", phone: "", isDefault: false });
     setIsAdding(false);
     setEditingId(null);
   };
@@ -59,6 +60,7 @@ export function AddressForm({
       city: addr.city,
       postalCode: addr.postalCode,
       country: addr.country,
+      phone: addr.phone || "",
       isDefault: addr.isDefault,
     });
     setEditingId(addr._id);
@@ -100,6 +102,7 @@ export function AddressForm({
                       </div>
                       <p className="text-sm text-muted-foreground">{addr.city}, {addr.postalCode}</p>
                       <p className="text-sm text-muted-foreground">{addr.country}</p>
+                      {addr.phone && <p className="text-sm text-muted-foreground">{addr.phone}</p>}
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -168,6 +171,17 @@ export function AddressForm({
                   placeholder="US"
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="(555) 123-4567"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   required
                 />
               </div>
